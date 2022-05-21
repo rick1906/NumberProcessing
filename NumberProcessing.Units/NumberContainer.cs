@@ -6,27 +6,75 @@ using System.Text.RegularExpressions;
 
 namespace NumberProcessing.Units
 {
+    /// <summary>
+    /// Container to store <c>AdvancedNumber</c> and corresponding metric unit.
+    /// Handles cases when the physical value is approximate.
+    /// For example when provided value is ~3.14 or <3.14 or a range.
+    /// </summary>
     public struct NumberContainer
     {
         private AdvancedNumber _number;
         private ModifierType _modifier;
         private string _unit;
 
+        /// <summary>
+        /// Numeric value.
+        /// </summary>
         public AdvancedNumber Number { get { return _number; } }
+
+        /// <summary>
+        /// Type of approximation, etc.
+        /// </summary>
         public ModifierType Modifier { get { return _modifier; } }
+
+        /// <summary>
+        /// Metric unit string.
+        /// </summary>
         public string Unit { get { return string.IsNullOrEmpty(_unit) ? "" : _unit; } }
 
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public decimal Value { get { return _number.Value; } }
+
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public decimal Error { get { return _number.Error; } }
+
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public int PowerOf10 { get { return _number.PowerOf10; } }
 
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public double ResultValue { get { return _number.ResultValue; } }
+
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public double ResultError { get { return _number.ResultError; } }
+
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public bool ResultIsDecimal { get { return _number.ResultIsDecimal; } }
 
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public decimal DecimalResultValue { get { return _number.DecimalResultValue; } }
+
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public decimal DecimalResultError { get { return _number.DecimalResultError; } }
 
+        /// <summary>
+        /// See <c>AdvancedNumber</c>.
+        /// </summary>
         public double RelativeError { get { return _number.RelativeError; } }
 
         private NumberContainer(AdvancedNumber number, string unit, ModifierType modifier)
@@ -50,11 +98,20 @@ namespace NumberProcessing.Units
             _modifier = ModifierType.Normal;
         }
 
+        /// <summary>
+        /// True if metric unit string is not empty.
+        /// </summary>
+        /// <returns></returns>
         public bool HasUnit()
         {
             return !string.IsNullOrEmpty(_unit);
         }
 
+        /// <summary>
+        /// True if metric unit is compatible with one of provided.
+        /// </summary>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public bool IsValidUnit(params string[] baseUnitVariants)
         {
             if (string.IsNullOrEmpty(_unit)) {
@@ -64,6 +121,10 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// True if metric unit is valid time unit.
+        /// </summary>
+        /// <returns></returns>
         public bool IsValidTimeUnit()
         {
             if (string.IsNullOrEmpty(_unit)) {
@@ -73,6 +134,12 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// True if numbers have compatible metric units.
+        /// </summary>
+        /// <param name="nc"></param>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public bool IsCompatibleWith(NumberContainer nc, params string[] baseUnitVariants)
         {
             if (baseUnitVariants == null || baseUnitVariants.Length == 0) {
@@ -86,6 +153,11 @@ namespace NumberProcessing.Units
             return MetricUnits.UnitsAreCompatible(_unit, nc._unit);
         }
 
+        /// <summary>
+        /// Transform to comparable object using base metric units.
+        /// </summary>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public IComparable ToComparable(params string[] baseUnitVariants)
         {
             AdvancedNumber value;
@@ -96,6 +168,10 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Transform to comparable object using time metric units.
+        /// </summary>
+        /// <returns></returns>
         public IComparable ToComparableTime()
         {
             AdvancedNumber value;
@@ -106,6 +182,10 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in base time units.
+        /// </summary>
+        /// <returns></returns>
         public double GetNormalizedResultTimeValue()
         {
             double value;
@@ -116,6 +196,11 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in proviced base units.
+        /// </summary>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public double GetNormalizedResultValue(params string[] baseUnitVariants)
         {
             double value;
@@ -126,6 +211,11 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in base time units. Do not throw.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>success</returns>
         public bool TryGetNormalizedResultTimeValue(out double value)
         {
             AdvancedNumber n;
@@ -138,6 +228,12 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in provided base units. Do not throw.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public bool TryGetNormalizedResultValue(out double value, params string[] baseUnitVariants)
         {
             AdvancedNumber n;
@@ -150,6 +246,10 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in base time units.
+        /// </summary>
+        /// <returns></returns>
         public AdvancedNumber GetNormalizedTimeValue()
         {
             AdvancedNumber value;
@@ -160,6 +260,11 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in provided base units.
+        /// </summary>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public AdvancedNumber GetNormalizedValue(params string[] baseUnitVariants)
         {
             AdvancedNumber value;
@@ -170,6 +275,11 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in base time units. Do not throw.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public bool TryGetNormalizedTimeValue(out AdvancedNumber value)
         {
             if (MetricUnits.ValidateTimeUnit(_unit)) {
@@ -182,6 +292,12 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Get normalized value in provided base units. Do not throw.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="baseUnitVariants"></param>
+        /// <returns></returns>
         public bool TryGetNormalizedValue(out AdvancedNumber value, params string[] baseUnitVariants)
         {
             if (baseUnitVariants == null || baseUnitVariants.Length == 0) {
@@ -204,6 +320,12 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Parse a string to <c>NumberContainer</c>.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static bool TryParse(string s, out NumberContainer value)
         {
             try {
@@ -217,6 +339,11 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Parse a string to <c>NumberContainer</c>.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static NumberContainer Parse(string s)
         {
             NumberContainer value;
@@ -227,6 +354,12 @@ namespace NumberProcessing.Units
             }
         }
 
+        /// <summary>
+        /// Parse a string to <c>NumberContainer</c>. Do not throw.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="result"></param>
+        /// <returns>success</returns>
         private static bool TryParseInternal(string s, out NumberContainer result)
         {
             string st = s.TrimEnd();
@@ -321,6 +454,9 @@ namespace NumberProcessing.Units
         private const char LessOrEqualThan = '≤';
         private const char GreaterOrEqualThan = '≥';
 
+        /// <summary>
+        /// Types of approximation.
+        /// </summary>
         public enum ModifierType
         {
             Normal = 0,

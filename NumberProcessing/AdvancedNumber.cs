@@ -5,49 +5,86 @@ using System.Text.RegularExpressions;
 
 namespace NumberProcessing
 {
+    /// <summary>
+    /// Struct to store decimal representaion of a number with uncertainty multiplied by a power of 10.
+    /// Like 3.141(5) * 10^9.
+    /// </summary>    
     public struct AdvancedNumber : IComparable, IComparable<AdvancedNumber>, IConvertible, IEquatable<AdvancedNumber>
     {
+        /// <summary>
+        /// Maximum power if 10, after which the number is treated as infinity.
+        /// </summary>
         public const int MaxPowerOf10 = 0x00FFFFFF;
 
         public static readonly AdvancedNumber PositiveInfinity = new AdvancedNumber(1, 0, MaxPowerOf10);
         public static readonly AdvancedNumber NegativeInfinity = new AdvancedNumber(-1, 0, MaxPowerOf10);
 
+        /// <summary>
+        /// Value without power-of-10 multiplier.
+        /// </summary>
         public decimal Value {
             get { return _value; }
         }
 
+        /// <summary>
+        /// Error without power-of-10 multiplier.
+        /// </summary>
         public decimal Error {
             get { return _error; }
         }
 
+        /// <summary>
+        /// Power of 10 in power-of-10 multiplier.
+        /// </summary>
         public int PowerOf10 {
             get { return _exp; }
         }
 
+        /// <summary>
+        /// Resulting value as <c>double</c>.
+        /// </summary>
         public double ResultValue {
             get { return (double)_value * DecimalUtils.Pow10Double(_exp); }
         }
 
+        /// <summary>
+        /// Resulting error as <c>double</c>.
+        /// </summary>
         public double ResultError {
             get { return (double)_error * DecimalUtils.Pow10Double(_exp); }
         }
 
+        /// <summary>
+        /// Returns true if resulting value can be represented as decimal.
+        /// </summary>
         public bool ResultIsDecimal {
             get { return DecimalUtils.CanBeDecimal(GetNormalPowerOf10()); }
         }
 
+        /// <summary>
+        /// Returns true if resulting value can be represented as double.
+        /// </summary>
         public bool ResultIsDouble {
             get { return DecimalUtils.CanBeDouble(GetNormalPowerOf10()); }
         }
 
+        /// <summary>
+        /// Resulting value as <c>decimal</c>. Can throw an exception.
+        /// </summary>
         public decimal DecimalResultValue {
             get { return _value * DecimalUtils.Pow10(_exp); }
         }
 
+        /// <summary>
+        /// Resulting error as <c>decimal</c>. Can throw an exception.
+        /// </summary>
         public decimal DecimalResultError {
             get { return _error * DecimalUtils.Pow10(_exp); }
         }
 
+        /// <summary>
+        /// Error relative to the value. Returns 0 if value is 0.
+        /// </summary>
         public double RelativeError {
             get { return _value != 0 ? (double)_error / (double)Math.Abs(_value) : 0; }
         }
@@ -114,11 +151,20 @@ namespace NumberProcessing
             this = Parse(s);
         }
 
+        /// <summary>
+        /// Get power of 10 the number can be multiplied by, so that the result is in [1,10) range.
+        /// </summary>
+        /// <returns>power-of-10 to normalize a number</returns>
         public int GetNormalPowerOf10()
         {
             return DecimalUtils.GetNormalPow10(_value) + _exp;
         }
 
+        /// <summary>
+        /// Convert to a string. See <c>AdvancedNumberFormat</c>.
+        /// </summary>
+        /// <param name="format">format</param>
+        /// <returns>string representaion of the number</returns>
         public string ToString(AdvancedNumberFormat format)
         {
             if (_exp >= MaxPowerOf10) {
@@ -211,31 +257,70 @@ namespace NumberProcessing
             return sn;
         }
 
+        /// <summary>
+        /// See <c>AdvancedNumberFormat</c>.
+        /// </summary>
+        /// <param name="shortFormat"></param>
+        /// <param name="decimalPoint"></param>
+        /// <param name="multiplySign"></param>
+        /// <param name="minPowerOf10"></param>
+        /// <param name="maxErrorDigits"></param>
+        /// <param name="maxValueDigits"></param>
+        /// <returns>string representaion of the number</returns>
         public string ToString(bool shortFormat, char decimalPoint, char multiplySign, int minPowerOf10, int maxErrorDigits, int maxValueDigits)
         {
             return ToString(new AdvancedNumberFormat(shortFormat, decimalPoint, multiplySign, minPowerOf10, maxErrorDigits, maxValueDigits));
         }
 
+        /// <summary>
+        /// See <c>AdvancedNumberFormat</c>.
+        /// </summary>
+        /// <param name="shortFormat"></param>
+        /// <param name="decimalPoint"></param>
+        /// <param name="multiplySign"></param>
+        /// <param name="minPowerOf10"></param>
+        /// <returns>string representaion of the number</returns>
         public string ToString(bool shortFormat, char decimalPoint, char multiplySign, int minPowerOf10)
         {
             return ToString(new AdvancedNumberFormat(shortFormat, decimalPoint, multiplySign, minPowerOf10));
         }
 
+        /// <summary>
+        /// See <c>AdvancedNumberFormat</c>.
+        /// </summary>
+        /// <param name="shortFormat"></param>
+        /// <param name="decimalPoint"></param>
+        /// <param name="multiplySign"></param>
+        /// <returns>string representaion of the number</returns>
         public string ToString(bool shortFormat, char decimalPoint, char multiplySign)
         {
             return ToString(new AdvancedNumberFormat(shortFormat, decimalPoint, multiplySign));
         }
 
+        /// <summary>
+        /// See <c>AdvancedNumberFormat</c>.
+        /// </summary>
+        /// <param name="shortFormat"></param>
+        /// <returns>string representaion of the number</returns>
         public string ToString(bool shortFormat)
         {
             return ToString(new AdvancedNumberFormat(shortFormat));
         }
 
+        /// <summary>
+        /// Default representaion as a string. See <c>AdvancedNumberFormat</c>.
+        /// </summary>
+        /// <returns>string representaion of the number</returns>
         public override string ToString()
         {
             return ToString(new AdvancedNumberFormat());
         }
 
+        /// <summary>
+        /// Compares numbers.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
         public int CompareTo(AdvancedNumber n)
         {
             int dexp = n._exp - _exp;
@@ -248,6 +333,11 @@ namespace NumberProcessing
             }
         }
 
+        /// <summary>
+        /// Compares number to object. See <c>IComparable</c>
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public int CompareTo(object obj)
         {
             if (obj is AdvancedNumber) {
@@ -266,6 +356,11 @@ namespace NumberProcessing
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns>true if the supplied object is equal to this number</returns>
         public override bool Equals(object obj)
         {
             if (obj is AdvancedNumber) {
@@ -275,6 +370,11 @@ namespace NumberProcessing
             return false;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns>true if the supplied number is equal to this number</returns>
         public bool Equals(AdvancedNumber other)
         {
             if (ResultIsDecimal && other.ResultIsDecimal) {
@@ -284,6 +384,10 @@ namespace NumberProcessing
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns>hash code</returns>
         public override int GetHashCode()
         {
             return ResultIsDecimal ? DecimalResultValue.GetHashCode() : ResultValue.GetHashCode();
@@ -409,26 +513,52 @@ namespace NumberProcessing
             return n1.CompareTo(n2) <= 0;
         }
 
+        /// <summary>
+        /// Returns true if the number represents positive infinity.
+        /// Different non-equal structs can represent infinity.
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
         public static bool IsPositiveInfinity(AdvancedNumber num)
         {
             return num._value > 0 && num._exp >= MaxPowerOf10;
         }
 
+        /// <summary>
+        /// Returns true if the number represents negative infinity.
+        /// Different non-equal structs can represent infinity.
+        /// </summary>
+        /// <param name="num"></param>
+        /// <returns></returns>
         public static bool IsNegativeInfinity(AdvancedNumber num)
         {
             return num._value < 0 && num._exp >= MaxPowerOf10;
         }
 
+        /// <summary>
+        /// Returns true if the number represents positive infinity.
+        /// </summary>
+        /// <returns></returns>
         public bool IsPositiveInfinity()
         {
             return IsPositiveInfinity(this);
         }
 
+        /// <summary>
+        /// Returns true if the number represents negative infinity.
+        /// </summary>
+        /// <returns></returns>
         public bool IsNegativeInfinity()
         {
             return IsNegativeInfinity(this);
         }
 
+        /// <summary>
+        /// Return a new number with error rounded to provided number of digits.
+        /// Value is rounded to have no more digits than error.
+        /// </summary>
+        /// <param name="digits"></param>
+        /// <returns></returns>
         public AdvancedNumber NormalizeError(int digits)
         {
             if (digits <= 0) { throw new ArgumentOutOfRangeException(nameof(digits)); }
@@ -439,6 +569,10 @@ namespace NumberProcessing
             return new AdvancedNumber(v, e, _exp);
         }
 
+        /// <summary>
+        /// Return a new number with value rounded to have no more digits than error.
+        /// </summary>
+        /// <returns></returns>
         public AdvancedNumber NormalizeError()
         {
             int ep1 = DecimalUtils.GetMaxPow10(_error);
@@ -447,6 +581,10 @@ namespace NumberProcessing
             return (digits > 0) ? NormalizeError(digits) : this;
         }
 
+        /// <summary>
+        /// Return a new equal number with value (without power-of-10) in range [1,10).
+        /// </summary>
+        /// <returns></returns>
         public AdvancedNumber Normalize()
         {
             int k = DecimalUtils.GetNormalPow10(_value);
@@ -454,6 +592,11 @@ namespace NumberProcessing
             return new AdvancedNumber(_value * m, _error * m, _exp + k);
         }
 
+        /// <summary>
+        /// Return a new equal number with provided power-of-10.
+        /// </summary>
+        /// <param name="powerOf10"></param>
+        /// <returns></returns>
         public AdvancedNumber NormalizeTo(int powerOf10)
         {
             int d = _exp - powerOf10;
@@ -461,26 +604,56 @@ namespace NumberProcessing
             return new AdvancedNumber(_value * m, _error * m, d);
         }
 
+        /// <summary>
+        /// Get a balanced power-of-10 to perform operations on two numbers.
+        /// </summary>
+        /// <param name="n1"></param>
+        /// <param name="n2"></param>
+        /// <returns></returns>
         private static int GetCommonPowerOf10(AdvancedNumber n1, AdvancedNumber n2)
         {
             return Math.Max(n1._exp, n2._exp);
         }
 
+        /// <summary>
+        /// Parse a string to a number.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict">allow only valid string representaions</param>
+        /// <returns></returns>
         public static AdvancedNumber Parse(string s, bool strict)
         {
             return AdvancedNumberParser.Parse(s, strict, out Match m);
         }
 
+        /// <summary>
+        /// Parse a string to a number. Not strict.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static AdvancedNumber Parse(string s)
         {
             return Parse(s, false);
         }
 
+        /// <summary>
+        /// Parse a string to a number. Do not throw.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict">allow only valid string representaions</param>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool TryParse(string s, bool strict, out AdvancedNumber number)
         {
             return AdvancedNumberParser.TryParse(s, strict, out number, out Match ma);
         }
 
+        /// <summary>
+        /// Parse a string to a number. Do not throw. Not strict.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool TryParse(string s, out AdvancedNumber number)
         {
             return TryParse(s, false, out number);

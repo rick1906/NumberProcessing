@@ -4,6 +4,9 @@ using System.Text;
 
 namespace NumberProcessing
 {
+    /// <summary>
+    /// Format of a string representaion of <c>AdvancedNumber</c>.
+    /// </summary>
     public class AdvancedNumberFormat
     {
         public const char MultiplyExp = 'E';
@@ -13,21 +16,75 @@ namespace NumberProcessing
         public const char PointComma = ',';
         public const char PlusMinus = '±';
 
+        /// <summary>
+        /// Default format.
+        /// </summary>
         public static AdvancedNumberFormat Default { get { return new AdvancedNumberFormat(null); } }
+
+        /// <summary>
+        /// Currently used global format.
+        /// </summary>
         public static AdvancedNumberFormat Current { get; set; } = Default;
 
+        /// <summary>
+        /// Put error in brackets: 3.14(1) for 3.14 value and 0.01 error.
+        /// </summary>
         public bool ShortFormat { get; set; } = true;
+
+        /// <summary>
+        /// Decimal point character.
+        /// </summary>
         public char DecimalPoint { get; set; } = PointDot;
+
+        /// <summary>
+        /// Multiply sign for power-of-10 multiplier.
+        /// </summary>
         public char MultiplySign { get; set; } = MultiplyCross;
+
+        /// <summary>
+        /// Minimum power-of-10 to put out of brackets.
+        /// </summary>
         public int MinPowerOf10 { get; set; } = 5;
+
+        /// <summary>
+        /// Maximum digits in error representaion.
+        /// </summary>
         public int MaxErrorDigits { get; set; } = 2;
+
+        /// <summary>
+        /// Maximum error significant value for short representaion.
+        /// </summary>
         public int MaxErrorValue { get; set; } = 39;
+
+        /// <summary>
+        /// Maximum value digits.
+        /// </summary>
         public int MaxValueDigits { get; set; } = 0;
+
+        /// <summary>
+        /// Spaces before and after multiply sign.
+        /// </summary>
         public bool SpacesNearMultiply { get; set; } = true;
+
+        /// <summary>
+        /// Spaces before and after plusminus sign.
+        /// </summary>
         public bool SpacesNearPlusMinus { get; set; } = true;
+
+        /// <summary>
+        /// Space before E in power-of-10 (example: 3.141 x 10E5).
+        /// </summary>
         public bool SpaceBeforeExp { get; set; } = false;
+
+        /// <summary>
+        /// Space before bracket for short error representation.
+        /// </summary>
         public bool SpaceBeforeBracket { get; set; } = true;
 
+        /// <summary>
+        /// Return new instance with same configuration.
+        /// </summary>
+        /// <returns></returns>
         public AdvancedNumberFormat Copy()
         {
             return new AdvancedNumberFormat(this);

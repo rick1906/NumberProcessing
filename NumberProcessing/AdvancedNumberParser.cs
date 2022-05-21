@@ -46,46 +46,90 @@ namespace NumberProcessing
         private static readonly Regex NumberRegex = new Regex("^" + RxMainAll + "$", RegexOptions.IgnoreCase);
         private static readonly Regex NumberRegexSpaced = new Regex("^\\s*" + RxMainAllSpaced + "\\s*$", RegexOptions.IgnoreCase);
 
+        /// <summary>
+        /// Get regex to match a string as an <c>AdvancedNumber</c>.
+        /// </summary>
+        /// <param name="strict">allow only valid string representaions</param>
+        /// <returns></returns>
         public static Regex GetRegex(bool strict)
         {
             return strict ? NumberRegex : NumberRegexSpaced;
         }
 
+        /// <summary>
+        /// Get regex to match a string as an <c>AdvancedNumber</c>. Not strict.
+        /// </summary>
+        /// <returns></returns>
         public static Regex GetRegex()
         {
-            return NumberRegex;
+            return NumberRegexSpaced;
         }
 
+        /// <summary>
+        /// Get regex to find an <c>AdvancedNumber</c> in a string.
+        /// </summary>
+        /// <param name="strict">allow only valid string representaions</param>
+        /// <returns></returns>
         public static Regex GetGlobalRegex(bool strict)
         {
             return new Regex(GetRegexString(strict), RegexOptions.IgnoreCase);
         }
 
+        /// <summary>
+        /// Get regex to find an <c>AdvancedNumber</c> in a string. Not strict.
+        /// </summary>
+        /// <returns></returns>
         public static Regex GetGlobalRegex()
         {
             return new Regex(GetRegexString(), RegexOptions.IgnoreCase);
         }
 
+        /// <summary>
+        /// Get regex string to find an <c>AdvancedNumber</c> in a string.
+        /// </summary>
+        /// <param name="strict">allow only valid string representaions</param>
+        /// <returns></returns>
         public static string GetRegexString(bool strict)
         {
             return strict ? RxMainAll : RxMainAllSpaced;
         }
 
+        /// <summary>
+        /// Get regex string to find an <c>AdvancedNumber</c> in a string.
+        /// </summary>
+        /// <returns></returns>
         public static string GetRegexString()
         {
             return RxMainAll;
         }
 
+        /// <summary>
+        /// Find all <c>AdvancedNumber</c>-like substrings in a string.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict"></param>
+        /// <returns></returns>
         public static MatchCollection MatchAll(string s, bool strict)
         {
             return GetGlobalRegex(strict).Matches(s);
         }
 
+        /// <summary>
+        /// Use the <c>AdvancedNumber</c> regex on a string.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict"></param>
+        /// <returns></returns>
         public static Match Match(string s, bool strict)
         {
             return GetRegex(strict).Match(s);
         }
 
+        /// <summary>
+        /// Create an <c>AdvancedNumber</c> from a <c>Match</c>.
+        /// </summary>
+        /// <param name="match"></param>
+        /// <returns></returns>
         public static AdvancedNumber Parse(Match match)
         {
             Group m = match.Groups["m"];     // minus
@@ -142,6 +186,12 @@ namespace NumberProcessing
             return new AdvancedNumber(v, dv, exp);
         }
 
+        /// <summary>
+        /// Create an <c>AdvancedNumber</c> from a <c>Match</c>. Do not throw.
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static bool TryParse(Match match, out AdvancedNumber number)
         {
             try {
@@ -156,6 +206,13 @@ namespace NumberProcessing
             }
         }
 
+        /// <summary>
+        /// Parse a string to an <c>AdvancedNumber</c>.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
         public static AdvancedNumber Parse(string s, bool strict, out Match match)
         {
             match = Match(s, strict);
@@ -166,6 +223,14 @@ namespace NumberProcessing
             }
         }
 
+        /// <summary>
+        /// Parse a string to an <c>AdvancedNumber</c>. Do not throw.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict"></param>
+        /// <param name="number"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
         public static bool TryParse(string s, bool strict, out AdvancedNumber number, out Match match)
         {
             match = Match(s, strict);
@@ -177,6 +242,12 @@ namespace NumberProcessing
             }
         }
 
+        /// <summary>
+        /// Find all <c>AdvancedNumber</c> instances in a string.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <param name="strict"></param>
+        /// <returns></returns>
         public static KeyValuePair<Match, AdvancedNumber>[] ParseAll(string s, bool strict)
         {
             MatchCollection matches = MatchAll(s, strict);

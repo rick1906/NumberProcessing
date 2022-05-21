@@ -6,6 +6,9 @@ using System.Text.RegularExpressions;
 
 namespace NumberProcessing
 {
+    /// <summary>
+    /// Class to store chars used in <c>AdvancedNumber</c> parsing.
+    /// </summary>
     public static class SpecialChars
     {
         public static readonly string MultiplySigns = "*•·×⨯x";
