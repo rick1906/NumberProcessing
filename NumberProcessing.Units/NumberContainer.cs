@@ -447,6 +447,69 @@ namespace NumberProcessing.Units
             return true;
         }
 
+        /// <summary>
+        /// Get string representation.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return ToString(AdvancedNumberFormat.Current);
+        }
+
+        /// <summary>
+        /// Get string representation.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public string ToString(AdvancedNumberFormat format)
+        {
+            string result = _number.ToString(format);
+            if (_modifier == ModifierType.Range) {
+                decimal min = _number.Value - _number.Error;
+                decimal max = _number.Value + _number.Error;
+                if (min >= 0 && max >= 0) {
+                    var xformat = new AdvancedNumberFormat(format) { MinPowerOf10 = 0 };
+                    string mins = new AdvancedNumber(min, 0, 0).ToString(xformat);
+                    string maxs = new AdvancedNumber(max, 0, 0).ToString(xformat);
+                    string range = mins + " - " + maxs;
+                    string tpl = Regex.Replace(new AdvancedNumber(9, 0, _number.PowerOf10).ToString(format), "^[0-9\\-\\.,]*", "");
+                    if (string.IsNullOrEmpty(tpl)) {
+                        result = range;
+                    } else {
+                        result = "(" + range + ")" + tpl;
+                    }
+                    if (!string.IsNullOrEmpty(_unit)) {
+                        return result + " " + _unit;
+                    } else {
+                        return result;
+                    }
+                }
+            }
+            if (_modifier == ModifierType.ApproximateBrackets) {
+                result = "(" + result + ")";
+            }
+            if (!string.IsNullOrEmpty(_unit)) {
+                result = result + " " + _unit;
+            }
+            if (_modifier == ModifierType.Normal) {
+                return result;
+            } else if (_modifier == ModifierType.Approximate) {
+                return Approximate + " " + result;
+            } else if (_modifier == ModifierType.ApproximateEquals) {
+                return ApproximateEquals + " " + result;
+            } else if (_modifier == ModifierType.LessThan) {
+                return LessThan + " " + result;
+            } else if (_modifier == ModifierType.GreaterThan) {
+                return GreaterThan + " " + result;
+            } else if (_modifier == ModifierType.LessOrEqualThan) {
+                return LessOrEqualThan + " " + result;
+            } else if (_modifier == ModifierType.GreaterOrEqualThan) {
+                return GreaterOrEqualThan + " " + result;
+            } else {
+                return result;
+            }
+        }
+
         private const char Approximate = '~';
         private const char ApproximateEquals = '≈';
         private const char LessThan = '<';
