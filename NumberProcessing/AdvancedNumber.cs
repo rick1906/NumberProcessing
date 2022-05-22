@@ -452,7 +452,7 @@ namespace NumberProcessing
             int p = GetCommonPowerOf10(n1, n2);
             AdvancedNumber nn1 = n1.NormalizeTo(p);
             AdvancedNumber nn2 = n2.NormalizeTo(p);
-            return new AdvancedNumber(n1._value + n2._value, (decimal)CalculateError(nn1._error, nn2._error), p);
+            return new AdvancedNumber(nn1._value + nn2._value, (decimal)CalculateError(nn1._error, nn2._error), p);
         }
 
         public static AdvancedNumber operator -(AdvancedNumber n1, AdvancedNumber n2)
@@ -460,7 +460,7 @@ namespace NumberProcessing
             int p = GetCommonPowerOf10(n1, n2);
             AdvancedNumber nn1 = n1.NormalizeTo(p);
             AdvancedNumber nn2 = n2.NormalizeTo(p);
-            return new AdvancedNumber(n1._value - n2._value, (decimal)CalculateError(nn1._error, nn2._error), p);
+            return new AdvancedNumber(nn1._value - nn2._value, (decimal)CalculateError(nn1._error, nn2._error), p);
         }
 
         public static AdvancedNumber operator *(AdvancedNumber n1, AdvancedNumber n2)
