@@ -73,3 +73,42 @@ Outputs:
 6.17 (13) × 10E-12
 2.47 (5) × 10E75
 ````
+
+## Examples for NumberContainer
+#### Working with metric units
+````cs
+NumberContainer nc1a = new NumberContainer(60, "s");
+NumberContainer nc2a = new NumberContainer(5, "min");
+NumberContainer nc1b = new NumberContainer(3, "kg");
+NumberContainer nc2b = new NumberContainer(500, "g");
+AdvancedNumber n1a = nc1a.GetNormalizedTimeValue();
+AdvancedNumber n2a = nc2a.GetNormalizedTimeValue();
+AdvancedNumber n1b = nc1b.GetNormalizedValue("g");
+AdvancedNumber n2b = nc2b.GetNormalizedValue("g");
+AdvancedNumber x = n1b + n2b;
+Console.WriteLine((n1a + n2a).ToString() + " s");
+Console.WriteLine((n1b + n2b).ToString() + " g");
+````
+Outputs:
+````
+360 s
+3500 g
+````
+#### Parsing & using different approximation types
+````cs
+NumberContainer nc1 = NumberContainer.Parse("33.44(1) kg");
+NumberContainer nc2 = NumberContainer.Parse("~10.5 min");
+NumberContainer nc3 = NumberContainer.Parse("3-5 h");
+NumberContainer nc4 = NumberContainer.Parse("<10 g");
+Console.WriteLine(nc1.ToString() + " | " + nc1.Modifier + " | " + nc1.Number);
+Console.WriteLine(nc2.ToString() + " | " + nc2.Modifier + " | " + nc2.Number);
+Console.WriteLine(nc3.ToString() + " | " + nc3.Modifier + " | " + nc3.Number);
+Console.WriteLine(nc4.ToString() + " | " + nc4.Modifier + " | " + nc4.Number);
+````
+Outputs:
+````
+33.44 (1) kg | Normal | 33.44 (1)
+~ 10.5 min | Approximate | 10.5
+3 - 5 h | Range | 4 (1)
+< 10 g | LessThan | 10
+````
